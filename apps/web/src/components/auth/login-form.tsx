@@ -67,6 +67,11 @@ export function LoginForm({ message }: { message?: string }) {
             potvrzení.
           </div>
         )}
+        {message === "confirm-error" && (
+          <div className="mb-4 rounded-md bg-destructive/10 px-4 py-3 text-sm text-destructive">
+            Potvrzení e-mailu selhalo. Zkuste se zaregistrovat znovu.
+          </div>
+        )}
         {serverError && (
           <div className="mb-4 rounded-md bg-destructive/10 px-4 py-3 text-sm text-destructive">
             {serverError}
