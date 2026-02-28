@@ -84,3 +84,13 @@
 - Zustand store: Overkill pro jeden boolean stav.
 - React Context: Zbytečná abstrakce pro lokální UI stav.
 **Consequences:** Sidebar i Header jsou "use client" (potřebují usePathname), ale layout.tsx zůstává server component pro data fetching.
+
+### ADR-015: Client detail route [id] = slug, ne UUID (2026-03-01)
+**Decision:** Route `/clients/[id]` přijímá slug (ne UUID). ClientCard linkuje přes slug pro hezčí URL.
+**Context:** Slug je UNIQUE v DB, uživatelsky přívětivější v URL baru. UUID by bylo technicky korektní ale ošklivé.
+**Consequences:** Page query: `.eq("slug", slug)`. Slug se auto-generuje při POST z názvu (NFD normalize → kebab-case).
+
+### ADR-016: Double layer security pro admin operace (2026-03-01)
+**Decision:** Admin check na 3 úrovních: frontend (redirect/skrytí UI), API route (profiles.role check), Supabase (RLS policies).
+**Context:** Frontend check je UX (neobtěžuj non-adminy formuláři). API check je autorizace. RLS je safety net.
+**Consequences:** Každá PATCH/DELETE/POST operace na klientech kontroluje `profiles.role === "admin"` v API route. RLS pak filtruje i to, co admin vidí (jen své klienty).

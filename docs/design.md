@@ -212,6 +212,19 @@ Použití: Sidebar, headery, sekundární tlačítka, text akcenty, linky.
 - Text: h2 text-lg font-medium + p text-sm text-muted-foreground
 - CTA: Button pokud má uživatel oprávnění (admin check)
 
+**Client detail page pattern** (`clients/[id]/page.tsx` + `client-detail-tabs.tsx`):
+- Zpět link: Button ghost size-sm s ArrowLeft ikonou, `-ml-2`
+- Header: h1 text-2xl font-semibold + doména jako `<a>` link (target _blank) + Badge active/inactive
+- Tabs (line variant): Přehled | SEO Jobs | Nastavení (admin only)
+- Tab Přehled: 2-col grid (lg), vlevo brand voice + poznámky + metadata datumy, vpravo tým (Avatar + jméno + role Badge)
+- Tab SEO Jobs: Table s typem, statusem (Badge), progress, datumy. Empty state text pokud žádné joby.
+- Tab Nastavení: edit form (max-w-lg), success/error banners, Separator + "Nebezpečná zóna" s deaktivací
+
+**New client form** (`clients/new/`):
+- Admin only (server-side redirect na `/`)
+- max-w-lg, h1 + popis + form (name*, domain, brandVoice textarea, notes textarea)
+- Buttons: "Vytvořit klienta" + "Zrušit" (outline, link na `/`)
+
 ### Badges / Score badges
 - Severity critical: bg-error/10, text-error, border-error/20
 - Severity warning: bg-warning/10, text-warning, border-warning/20

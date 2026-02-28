@@ -1,6 +1,6 @@
 # Active Plan — Agency Ops
 
-## Aktuální stav: BLOK 4 — Dashboard Layout (hotovo)
+## Aktuální stav: BLOK 5 — Client CRUD (hotovo)
 
 ### Hotovo
 - [x] BLOK 1: DB schema + RLS policies + helper funkce
@@ -22,8 +22,14 @@
 - [x] BLOK 4: ClientCard component + GET /api/clients endpoint
 - [x] BLOK 4: Empty state, admin-only "Přidat klienta", completed job counts
 
+- [x] BLOK 5: Client detail page (`/clients/[slug]`) — header, doména jako link, status badge
+- [x] BLOK 5: Client detail tabs — Přehled (brand voice, poznámky, tým), SEO Jobs (tabulka), Nastavení (edit form + deaktivace, admin only)
+- [x] BLOK 5: New client page (`/clients/new`) — admin only, Zod validace, auto slug
+- [x] BLOK 5: Zod schéma pro klienty (`lib/validations/client.ts`)
+- [x] BLOK 5: API routes — POST /api/clients, GET/PATCH/DELETE /api/clients/[id]
+- [x] BLOK 5: Double layer security — admin check frontend + API + RLS
+
 ### Další kroky
-- [ ] Client detail page (`/clients/[slug]`)
 - [ ] Job queue UI (spuštění jobu, progress, výsledky)
 - [ ] SEO audit job — worker pipeline
 

@@ -113,9 +113,13 @@ PATCH  /api/clients/[id]               → Update client
 DELETE /api/clients/[id]               → Soft delete (set is_active=false)
 ```
 
-**Poznámka:** Dashboard page (`/`) fetchuje klienty + job counts přímo server-side (RSC) přes Supabase client, ne přes API route. API route `GET /api/clients` existuje pro budoucí client-side použití.
-Dashboard query: `clients` (name, slug, domain, is_active) + `jobs` (count where status='completed' grouped by client_id).
-Admin role z `profiles.role` určuje viditelnost "Přidat klienta" buttonu.
+**Implementační poznámky:**
+- Dashboard (`/`) fetchuje klienty RSC server-side, ne přes API route.
+- Client detail (`/clients/[slug]`) — RSC, route param je slug (ne UUID).
+- POST `/api/clients` — auto-generuje slug z názvu (NFD normalize, kebab-case). Automaticky přidá tvůrce jako admin do `client_members`.
+- PATCH/DELETE — admin check (profiles.role) + RLS. DELETE = soft delete (is_active=false).
+- Validace: Zod schéma v `lib/validations/client.ts` (createClientSchema, updateClientSchema).
+- Double layer security: admin check na frontendu (redirect/skrytí UI) + admin check v API route + RLS.
 
 ### Client Members
 ```
