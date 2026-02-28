@@ -71,3 +71,16 @@
 - Next.js Server Actions: Přidává indirection, Supabase browser client je jednodušší.
 - Uncontrolled forms (bez RHF): Méně boilerplatu, ale horší UX pro inline validaci.
 **Consequences:** Auth forms jsou plně client-side. Middleware (`updateSession`) řeší cookie refresh.
+
+### ADR-013: PKCE email confirmation via /auth/confirm route (2026-03-01)
+**Decision:** Route handler `GET /auth/confirm` exchanguje PKCE code za session. Fallback na verifyOtp pro token_hash flow.
+**Context:** Supabase SSR používá PKCE flow — po kliknutí na potvrzovací email Supabase redirectne s `?code=xxx`. Bez route handleru se token nevymění a login selže ("Invalid login credentials").
+**Consequences:** `/auth/confirm` v middleware publicPaths. Signup nastavuje `emailRedirectTo` na `${origin}/auth/confirm`.
+
+### ADR-014: DashboardShell jako jediný "use client" wrapper (2026-03-01)
+**Decision:** Jeden `DashboardShell` client component řídí Sheet open/close stav sdílený mezi Header (hamburger) a Sheet (sidebar).
+**Context:** Sheet stav musí být sdílený — hamburger v Header otevírá, klik na nav item v Sheet zavírá. Místo context/zustand stačí jeden useState v parent komponentě.
+**Alternatives considered:**
+- Zustand store: Overkill pro jeden boolean stav.
+- React Context: Zbytečná abstrakce pro lokální UI stav.
+**Consequences:** Sidebar i Header jsou "use client" (potřebují usePathname), ale layout.tsx zůstává server component pro data fetching.

@@ -103,20 +103,37 @@ Použití: Sidebar, headery, sekundární tlačítka, text akcenty, linky.
 
 ### Sidebar
 - Šířka: w-64 (256px), fixed position
-- Pozadí: **secondary-500** (#005A87)
-- Text: bílý (white), opacity 70% pro neaktivní, 100% pro aktivní
-- Aktivní nav item: **primary-500** (#F18B32) levý border (4px) + bílý text + secondary-700 pozadí
-- Hover: secondary-600 pozadí
-- Logo area: top, padding p-6
-- Client selector: pod logem, dropdown s bílým textem
-- Navigace: grouped by module (Dashboard, SEO → submenu)
-- User profile: úplně dole, avatar + jméno + logout icon
+- Pozadí: **secondary-500** (#005A87) → `bg-sidebar`
+- Text: bílý (white), opacity 70% pro neaktivní, 100% pro aktivní → `text-sidebar-foreground/70`
+- Aktivní nav item: **primary-500** (#F18B32) levý border (4px) + bílý text + secondary-700 pozadí → `border-sidebar-primary bg-sidebar-accent text-sidebar-accent-foreground`
+- Hover: secondary-600 pozadí → `hover:bg-secondary-600`
+- Disabled items: `opacity-50 pointer-events-none` + Badge outline "Brzy"
+- Logo area: top, padding p-6, `text-lg font-semibold`
+- Client selector: pod logem, placeholder Button ghost s ChevronDown
+- Navigace: grouped by module (Dashboard, SEO → submenu s `pl-10` odsazením)
+- Settings: zvlášť dole nad user sekcí
+- User profile: úplně dole, Avatar + jméno + email + logout icon button
+- Logout: `supabase.auth.signOut()` → redirect `/login` + `router.refresh()`
+
+**Implementace:** `components/layout/sidebar.tsx` ("use client", usePathname pro active state)
+**Nav config:** `components/layout/sidebar-nav.ts` (NavItem type, navItems array, settingsNav)
 
 ### Header
-- Výška: h-16 (64px), sticky top
-- Pozadí: white, bottom border (border)
-- Obsah: breadcrumb vlevo, akce vpravo
-- Mobile: hamburger menu toggle vlevo
+- Výška: h-16 (64px), sticky top, `z-30`
+- Pozadí: white, bottom border → `border-b border-border bg-background`
+- Obsah: breadcrumb vlevo (odvozený z pathname segmentů, české labely)
+- Mobile: hamburger menu toggle vlevo (`lg:hidden`)
+
+**Implementace:** `components/layout/header.tsx` ("use client", usePathname pro breadcrumb)
+
+### Dashboard Shell
+- Wrapper: `DashboardShell` ("use client") — řídí Sheet open/close stav
+- Desktop: `<aside className="hidden lg:fixed lg:inset-y-0 lg:z-40 lg:flex lg:w-64">`
+- Mobile: `<Sheet side="left">` s Sidebar, `onNavClick` zavírá Sheet
+- Main: `<div className="lg:pl-64">` → Header + main content
+- Obaleno `<TooltipProvider>`
+
+**Implementace:** `components/layout/dashboard-shell.tsx`
 
 ### Content area
 - Max width: max-w-7xl (1280px)
@@ -124,10 +141,16 @@ Použití: Sidebar, headery, sekundární tlačítka, text akcenty, linky.
 - Padding: px-6 py-8
 - Pozadí: background (#FFFFFF)
 
+### Dashboard layout (server component)
+- `app/(dashboard)/layout.tsx` — fetchne user data přes server Supabase client
+- Query `profiles` tabulku pro `full_name`, `avatar_url`
+- Fallback: email jako jméno pokud profil neexistuje
+- Redirect na `/login` pokud user není přihlášený
+
 ### Responzivita
-- Mobile (< 768px): sidebar skrytý, hamburger menu (Sheet overlay)
+- Mobile (< 768px): sidebar skrytý, hamburger menu (Sheet overlay zleva)
 - Tablet (768-1024px): sidebar skrytý, hamburger
-- Desktop (> 1024px): sidebar vždy viditelný
+- Desktop (> 1024px, `lg:`): sidebar vždy viditelný
 
 ---
 
@@ -145,6 +168,7 @@ Použití: Sidebar, headery, sekundární tlačítka, text akcenty, linky.
 - Validační chyby: `text-xs text-destructive` inline pod polem
 - Server error banner: `bg-destructive/10 text-destructive`, rounded-md, nad formulářem
 - Success banner: `bg-success/10 text-success` (pro redirect s `?message=check-email`)
+- Confirm error banner: `bg-destructive/10 text-destructive` (pro `?message=confirm-error`)
 - Submit button: `w-full`, default variant, disabled + Loader2 spinner při loading
 - Footer: CardFooter s linkem na druhou auth stránku (`text-secondary hover:text-secondary/80`)
 

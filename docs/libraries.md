@@ -93,8 +93,16 @@ Handled by Supabase Auth client-side SDK. No custom auth endpoints needed.
 
 **Auth pages:** `/login`, `/signup` — client-side forms, Supabase `signInWithPassword` / `signUp`.
 - Signup posílá `full_name` v `options.data` → DB trigger `handle_new_user()` vytvoří profil.
+- Signup nastavuje `emailRedirectTo` → `${origin}/auth/confirm` (PKCE flow).
 - Validace: Zod schemas v `apps/web/src/lib/validations/auth.ts` (české hlášky).
 - Po signup → redirect na `/login?message=check-email`.
+
+**Email confirmation route:** `GET /auth/confirm`
+- Supabase po kliknutí na potvrzovací odkaz redirectne na `/auth/confirm?code=xxx` (PKCE flow).
+- Route handler: `exchangeCodeForSession(code)` → redirect na `/`.
+- Fallback: `verifyOtp({ token_hash, type })` pro token_hash flow.
+- Při chybě → redirect na `/login?message=confirm-error`.
+- Route je v middleware `publicPaths` (nevyžaduje auth).
 
 ### Clients
 ```
