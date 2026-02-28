@@ -442,7 +442,7 @@ Total pages crawled: {count}
 - xml2js (sitemap parsing)
 - lighthouse (volitelně, v budoucnu místo PSI API)
 
-### decisions.md – nové ADR
+### .claude/memory/decisions.md – nové ADR
 - ADR-006: Playwright + cheerio hybrid crawler (ne Screaming Frog API)
 - ADR-007: PageSpeed Insights API místo lokálního Lighthouse (MVP)
 - ADR-008: Sample JS rendering (ne full render) pro performance

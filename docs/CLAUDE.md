@@ -51,4 +51,4 @@ Next.js 15 (App Router), TypeScript strict, Supabase (PostgreSQL + Auth + RLS + 
 - implementer: Builds features per steering docs (model: sonnet)
 
 ## Architecture Decision Log
-@docs/decisions.md
+@.claude/memory/decisions.md

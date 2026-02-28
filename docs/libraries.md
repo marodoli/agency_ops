@@ -188,6 +188,62 @@ interface PageResult {
 }
 ```
 
+### CrawledPage (worker internal data model)
+
+Defined in `packages/shared/src/types/seo.ts`. Full crawler output per page.
+Source: `seo-technical-audit-blueprint.md` section 3.1.
+
+```typescript
+interface CrawledPage {
+  url: string;
+  finalUrl: string;                    // po redirectech
+  statusCode: number;
+  redirectChain: RedirectHop[];        // [{from, to, statusCode}]
+  responseTimeMs: number;
+  contentType: string;
+  contentLength: number;
+
+  // Head
+  title: string | null;
+  metaDescription: string | null;
+  canonical: string | null;
+  metaRobots: string | null;
+  xRobotsTag: string | null;
+  viewport: string | null;
+  hreflang: HreflangEntry[];          // [{lang, href}]
+  maxImagePreview: string | null;
+
+  // Content
+  h1: string[];
+  h2: string[];
+  h3: string[];
+  wordCount: number;
+  rawHtmlLength: number;
+
+  // Links
+  internalLinks: LinkData[];           // [{href, anchorText, isNofollow}]
+  externalLinks: LinkData[];
+  brokenLinks: string[];
+
+  // Images
+  images: ImageData[];                 // [{src, alt, width, height, sizeKb, format}]
+
+  // Structured Data
+  jsonLd: object[];
+  microdata: object[];
+
+  // JS rendering (if applicable)
+  jsRenderDiff: {
+    contentDiffPercent: number;
+    linksOnlyInRendered: number;
+  } | null;
+
+  // Timing
+  crawledAt: string;                   // ISO timestamp
+  crawlDepth: number;
+}
+```
+
 ## External API Contracts
 
 ### Anthropic API (Claude)
@@ -216,35 +272,37 @@ interface PageResult {
 
 ## NPM Dependencies (key packages)
 
-### apps/web
+### apps/web (installed)
 ```
-next, react, react-dom
-@supabase/supabase-js, @supabase/ssr
-tailwindcss, @tailwindcss/typography
-shadcn/ui components (installed individually)
-zustand
-react-hook-form, @hookform/resolvers, zod
-date-fns
-lucide-react (icons)
-```
-
-### workers/job-runner
-```
-@supabase/supabase-js
-@anthropic-ai/sdk
-playwright (headless Chrome for crawling)
-lighthouse (CLI for performance audits)
-cheerio (HTML parsing)
-robots-parser (robots.txt parsing)
-sitemap-parser (sitemap.xml parsing)
-zod (validation)
-pino (structured logging)
+next ^15, react ^19, react-dom ^19
+@supabase/supabase-js ^2, @supabase/ssr ^0
+tailwindcss ^4, @tailwindcss/postcss ^4
+shadcn/ui (radix-ui, class-variance-authority, clsx, tailwind-merge, tw-animate-css)
+  → components: button, card, input, label, textarea, select, badge, dialog,
+    dropdown-menu, separator, skeleton, table, tabs, progress, sonner (replaces toast),
+    tooltip, avatar, sheet
+zustand ^5
+react-hook-form ^7, @hookform/resolvers ^3, zod ^3
+date-fns ^4
+lucide-react ^0.468
 ```
 
-### packages/shared
+### workers/job-runner (installed)
 ```
-zod (shared validation schemas)
-typescript
+@supabase/supabase-js ^2
+@anthropic-ai/sdk ^0
+playwright ^1 (headless Chrome for crawling)
+cheerio ^1 (HTML parsing)
+robots-parser ^3 (robots.txt parsing)
+xml2js ^0.6 (sitemap.xml parsing – replaces sitemap-parser)
+zod ^3 (validation)
+pino ^9 (structured logging)
+```
+
+### packages/shared (installed)
+```
+zod ^3 (shared Zod schemas + inferred TypeScript types)
+typescript ^5
 ```
 
 ## Conventions

@@ -38,3 +38,28 @@
 **Decision:** Primary #F18B32 (orange), Secondary #005A87 (dark blue), Font: Poppins.
 **Context:** Colors provided by client (MacroConsulting brand). Poppins chosen for modern, rounded feel that pairs well with agency branding. Full 10-step color scale generated for both primary and secondary.
 **Rejected:** Previously derived yellow (#F5C518) + navy (#1A1A2E) from website analysis – replaced with actual brand colors. Inter font replaced by Poppins per client preference.
+
+### ADR-007: Tailwind CSS v4 CSS-first config (2026-02-28)
+**Decision:** Tailwind v4 s `@tailwindcss/postcss`. Tokeny v `globals.css` přes `@theme`, žádný `tailwind.config.ts`.
+**Context:** Tailwind v4 přešel na CSS-first konfiguraci. shadcn/ui v4 kompatibilita potvrzena.
+**Consequences:** Design tokeny z design.md se mapují na CSS custom properties přímo v globals.css.
+
+### ADR-008: sonner místo shadcn/ui toast (2026-02-28)
+**Decision:** Použít `sonner` pro toast notifikace.
+**Context:** shadcn/ui deprecated komponentu `toast` ve prospěch `sonner`.
+**Consequences:** Jednodušší API (`toast("Message")`). 18 shadcn komponent nainstalováno s sonner místo toast.
+
+### ADR-009: xml2js místo sitemap-parser (2026-02-28)
+**Decision:** `xml2js ^0.6` pro sitemap.xml parsing.
+**Context:** `sitemap-parser` (z původního plánu) má omezené API. `xml2js` zvládne i nestandardní sitemapy.
+**Consequences:** `@types/xml2js` v devDependencies workeru.
+
+### ADR-010: RLS helper funkce is_admin() a is_member_of() (2026-02-28)
+**Decision:** `security definer` helper funkce pro RLS policies místo inline subqueries.
+**Context:** 20 RLS policies na 5 tabulkách opakovaně kontrolují admin role a client membership.
+**Consequences:** DRY policies, snadnější audit. Migrace 002 dropla policies z 001 a vytvořila nové s helpers.
+
+### ADR-011: Zod schemas jako single source of truth pro typy (2026-02-28)
+**Decision:** Zod schemas v `packages/shared` s `z.infer<>` pro TypeScript typy.
+**Context:** Typy potřebné compile-time (TypeScript) i runtime (API/job params validace).
+**Consequences:** Žádná duplicita. Frontend i worker importují ze shared. DB schema = structure, Zod = validation.

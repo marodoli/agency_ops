@@ -31,16 +31,22 @@
 |-------|-----------|---------|---------|
 | Frontend framework | Next.js | 15 (App Router) | SSR, routing, API routes |
 | Language | TypeScript | strict mode | Type safety across entire codebase |
-| UI components | shadcn/ui | latest | Base component library |
-| Styling | Tailwind CSS | v4 | Utility-first CSS + custom design tokens |
+| UI components | shadcn/ui | latest (New York, slate) | Base component library |
+| Styling | Tailwind CSS | v4 (CSS-first config) | Utility-first CSS + custom design tokens |
 | Database | Supabase (PostgreSQL) | latest | Primary data store + RLS |
 | Auth | Supabase Auth | latest | Email + password authentication |
 | Realtime | Supabase Realtime | latest | Job progress streaming |
 | Job worker | Railway (Docker) | Node.js 22 LTS | Long-running SEO analysis jobs |
 | Frontend hosting | Vercel | latest | Edge CDN, preview deploys |
-| State management | Zustand | latest | Client-side state (lightweight) |
-| Form handling | React Hook Form + Zod | latest | Validation, form state |
-| Date handling | date-fns | latest | Date formatting (lightweight) |
+| State management | Zustand | ^5 | Client-side state (lightweight) |
+| Form handling | React Hook Form + Zod | ^7 + ^3 | Validation, form state |
+| Date handling | date-fns | ^4 | Date formatting (lightweight) |
+| Crawler | Playwright + cheerio | ^1 | Headless Chrome + fast HTML parsing |
+| Sitemap parsing | xml2js | ^0.6 | sitemap.xml parsing (replaces sitemap-parser) |
+| Robots.txt | robots-parser | ^3 | robots.txt rule parsing |
+| Logging | pino | ^9 | Structured JSON logging (Railway) |
+| AI SDK | @anthropic-ai/sdk | ^0 | Claude API for report generation |
+| Notifications | sonner | latest | Toast notifications (replaces shadcn toast) |
 
 ## Model Tiering (AI costs)
 
@@ -162,7 +168,7 @@ agency_ops/
 │   ├── tech.md                       # THIS FILE
 │   ├── libraries.md
 │   ├── design.md
-│   └── decisions.md
+│   └── decisions.md              # → lives in .claude/memory/decisions.md
 │
 ├── .env.example                      # Template for env vars
 ├── .gitignore
