@@ -18,9 +18,12 @@
 - [x] BLOK 4: Placeholder stránky — Dashboard `/`, Technický audit `/seo/technical-audit`, Nastavení `/settings`
 - [x] BLOK 4: Signup emailRedirectTo pro správné přesměrování po potvrzení emailu
 
+- [x] BLOK 4: Dashboard page — client cards grid (RSC, server-side fetch)
+- [x] BLOK 4: ClientCard component + GET /api/clients endpoint
+- [x] BLOK 4: Empty state, admin-only "Přidat klienta", completed job counts
+
 ### Další kroky
-- [ ] Client list page (dashboard overview s přiřazenými klienty)
-- [ ] Client detail page (`/clients/[id]`)
+- [ ] Client detail page (`/clients/[slug]`)
 - [ ] Job queue UI (spuštění jobu, progress, výsledky)
 - [ ] SEO audit job — worker pipeline
 

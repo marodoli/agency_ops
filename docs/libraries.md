@@ -113,6 +113,10 @@ PATCH  /api/clients/[id]               → Update client
 DELETE /api/clients/[id]               → Soft delete (set is_active=false)
 ```
 
+**Poznámka:** Dashboard page (`/`) fetchuje klienty + job counts přímo server-side (RSC) přes Supabase client, ne přes API route. API route `GET /api/clients` existuje pro budoucí client-side použití.
+Dashboard query: `clients` (name, slug, domain, is_active) + `jobs` (count where status='completed' grouped by client_id).
+Admin role z `profiles.role` určuje viditelnost "Přidat klienta" buttonu.
+
 ### Client Members
 ```
 GET    /api/clients/[id]/members       → List members for client

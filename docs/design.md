@@ -200,6 +200,18 @@ Použití: Sidebar, headery, sekundární tlačítka, text akcenty, linky.
 - Hover (pokud klikatelná): shadow-md + border-primary-200
 - Zakulacení: rounded-lg
 
+**Client card pattern** (`components/clients/client-card.tsx`):
+- CardHeader: jméno klienta (text-lg font-semibold) + Badge active/inactive vpravo
+- Doména: Globe ikona (size-3.5) + text-sm text-muted-foreground
+- CardContent: počet dokončených jobů
+- CardFooter: Button outline "Otevřít" → `/clients/{slug}`
+
+**Empty state pattern:**
+- Centrovaný: `mt-12 flex flex-col items-center gap-4 text-center`
+- Ikona: size-16 rounded-lg bg-surface, vnitřní ikona size-8 text-muted-foreground
+- Text: h2 text-lg font-medium + p text-sm text-muted-foreground
+- CTA: Button pokud má uživatel oprávnění (admin check)
+
 ### Badges / Score badges
 - Severity critical: bg-error/10, text-error, border-error/20
 - Severity warning: bg-warning/10, text-warning, border-warning/20
