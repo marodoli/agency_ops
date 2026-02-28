@@ -91,6 +91,11 @@ Immutable log of all significant actions.
 ### Authentication
 Handled by Supabase Auth client-side SDK. No custom auth endpoints needed.
 
+**Auth pages:** `/login`, `/signup` — client-side forms, Supabase `signInWithPassword` / `signUp`.
+- Signup posílá `full_name` v `options.data` → DB trigger `handle_new_user()` vytvoří profil.
+- Validace: Zod schemas v `apps/web/src/lib/validations/auth.ts` (české hlášky).
+- Po signup → redirect na `/login?message=check-email`.
+
 ### Clients
 ```
 GET    /api/clients                    → List clients (filtered by user membership)

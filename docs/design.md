@@ -131,6 +131,25 @@ Použití: Sidebar, headery, sekundární tlačítka, text akcenty, linky.
 
 ---
 
+## Auth stránky (Login / Signup)
+
+### Layout
+- Sdílený `(auth)/layout.tsx` — server component, žádná sidebar/header
+- Centrovaný: `flex min-h-svh items-center justify-center bg-background px-4 py-12`
+- Wrapper: `max-w-sm` (384px)
+
+### Formulářový pattern
+- Logo: "MacroConsulting" text v `text-secondary` + CardTitle (h1, text-2xl)
+- Pole: Label + relativní wrapper s ikonou (absolutně pozicovaná, `left-3`) + Input (`pl-9`)
+- Ikony: Mail, Lock, User z Lucide (size-4, text-muted-foreground)
+- Validační chyby: `text-xs text-destructive` inline pod polem
+- Server error banner: `bg-destructive/10 text-destructive`, rounded-md, nad formulářem
+- Success banner: `bg-success/10 text-success` (pro redirect s `?message=check-email`)
+- Submit button: `w-full`, default variant, disabled + Loader2 spinner při loading
+- Footer: CardFooter s linkem na druhou auth stránku (`text-secondary hover:text-secondary/80`)
+
+---
+
 ## Komponentová pravidla
 
 ### Obecné

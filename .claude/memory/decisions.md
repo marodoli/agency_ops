@@ -63,3 +63,11 @@
 **Decision:** Zod schemas v `packages/shared` s `z.infer<>` pro TypeScript typy.
 **Context:** Typy potřebné compile-time (TypeScript) i runtime (API/job params validace).
 **Consequences:** Žádná duplicita. Frontend i worker importují ze shared. DB schema = structure, Zod = validation.
+
+### ADR-012: Auth forms — React Hook Form + Zod, client-side (2026-02-28)
+**Decision:** Login/signup jako client components s `react-hook-form` + `zodResolver`. Supabase auth volání přímo z browseru.
+**Context:** Supabase JS SDK je navržený pro client-side auth. Server Actions by přidaly zbytečnou vrstvu.
+**Alternatives considered:**
+- Next.js Server Actions: Přidává indirection, Supabase browser client je jednodušší.
+- Uncontrolled forms (bez RHF): Méně boilerplatu, ale horší UX pro inline validaci.
+**Consequences:** Auth forms jsou plně client-side. Middleware (`updateSession`) řeší cookie refresh.
