@@ -10,10 +10,19 @@
     "test": "vitest run"
   },
   "dependencies": {
-    "@agency-ops/shared": "*"
+    "@agency-ops/shared": "*",
+    "@anthropic-ai/sdk": "^0",
+    "@supabase/supabase-js": "^2",
+    "cheerio": "^1",
+    "pino": "^9",
+    "playwright": "^1",
+    "robots-parser": "^3",
+    "xml2js": "^0.6",
+    "zod": "^3"
   },
   "devDependencies": {
     "@types/node": "^22",
+    "@types/xml2js": "^0.4",
     "tsx": "^4",
     "typescript": "^5",
     "vitest": "^3"
