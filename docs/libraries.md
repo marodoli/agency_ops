@@ -133,8 +133,21 @@ DELETE /api/clients/[id]/members/[uid] → Remove member (admin only)
 GET    /api/jobs?client_id=X           → List jobs for client
 POST   /api/jobs                       → Create (queue) new job
 GET    /api/jobs/[id]                  → Get job status + results
-POST   /api/jobs/[id]/cancel           → Cancel running job
+POST   /api/jobs/[id]  {action:"cancel"} → Cancel running job
 ```
+
+**Implementační poznámky:**
+- GET `/api/jobs` — vyžaduje `client_id` query param, RLS filtruje přístup, řazeno desc by `created_at`.
+- POST `/api/jobs` — validace přes `CreateJobSchema` (top-level) + `TechnicalAuditParamsSchema` (job-type-specific) z `@agency-ops/shared`. Timeout vypočten z `JOB_TYPE_REGISTRY[job_type].defaultTimeoutMs`. Zapisuje `audit_log` (action: `job.created`).
+- GET `/api/jobs/[id]` — vrací `select("*")`, RLS zajistí přístup jen k vlastním klientům.
+- POST `/api/jobs/[id]` — action `cancel`: kontroluje stav `queued`/`running` (jinak 409 INVALID_STATE). Nastaví `status: "cancelled"` + `completed_at`. Zapisuje `audit_log` (action: `job.cancelled`).
+- Zod schemas importovány z `@agency-ops/shared` — single source of truth pro validaci (ADR-011).
+
+### Realtime Hook
+- `useJobProgress(jobId, initialState?)` — client-side hook pro Supabase Realtime.
+- Subscribuje na `postgres_changes` UPDATE na `jobs` tabulku filtrováno `id=eq.{jobId}`.
+- Vrací `{ status, progress, progressMessage }`.
+- Auto-cleanup: `supabase.removeChannel(channel)` na unmount.
 
 ### Job Creation Payload
 ```typescript

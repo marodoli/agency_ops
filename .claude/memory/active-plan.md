@@ -1,6 +1,6 @@
 # Active Plan — Agency Ops
 
-## Aktuální stav: BLOK 5 — Client CRUD (hotovo)
+## Aktuální stav: BLOK 6 — Job API + Realtime (hotovo)
 
 ### Hotovo
 - [x] BLOK 1: DB schema + RLS policies + helper funkce
@@ -29,9 +29,16 @@
 - [x] BLOK 5: API routes — POST /api/clients, GET/PATCH/DELETE /api/clients/[id]
 - [x] BLOK 5: Double layer security — admin check frontend + API + RLS
 
+- [x] BLOK 6: GET /api/jobs?client_id=X — list jobů pro klienta (RLS, desc by created_at)
+- [x] BLOK 6: POST /api/jobs — vytvoření jobu (CreateJobSchema + TechnicalAuditParamsSchema validace, timeout_at z JOB_TYPE_REGISTRY, audit_log)
+- [x] BLOK 6: GET /api/jobs/[id] — detail jobu (RLS)
+- [x] BLOK 6: POST /api/jobs/[id] action=cancel — zrušení jobu (stav check queued/running, 409 pro ostatní stavy, audit_log)
+- [x] BLOK 6: useJobProgress hook — Supabase Realtime subscription (postgres_changes UPDATE na jobs tabulku, auto-cleanup na unmount)
+
 ### Další kroky
-- [ ] Job queue UI (spuštění jobu, progress, výsledky)
-- [ ] SEO audit job — worker pipeline
+- [ ] Job queue UI — formulář pro spuštění jobu, progress bar s realtime updaty, výsledky
+- [ ] SEO audit job — worker pipeline (crawler + analyzer + report generator)
+- [ ] Job result viewer — zobrazení TechnicalAuditResult dat
 
 ### Známé gaps
 - `.env.local` symlink (`apps/web/.env.local` → `../../.env.local`) — není v gitu, manuální setup
