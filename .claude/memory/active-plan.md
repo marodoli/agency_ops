@@ -1,6 +1,6 @@
 # Active Plan — Agency Ops
 
-## Aktuální stav: BLOK 8 — Job Queue UI (hotovo)
+## Aktuální stav: BLOK 9 — Crawler (hotovo)
 
 ### Hotovo
 - [x] BLOK 1: DB schema + RLS policies + helper funkce
@@ -46,8 +46,12 @@
 - [x] BLOK 8: Job status page (`clients/[id]/jobs/[jobId]/page.tsx`) — RSC, fetches job + client, renders progress card
 - [x] BLOK 8: Zod validace (`lib/validations/job.ts`) — jobLauncherSchema
 
+- [x] BLOK 9: BFS crawler (`jobs/seo/technical-audit/crawler.ts`) — resolveBaseUrl, fetchRobotsTxt (robots-parser), fetchSitemapUrls (xml2js, sitemap index support), parsePage (cheerio, všechna CrawledPage pole), fetchPage (manual redirect tracking), Semaphore (max 5 concurrent), 200ms politeness, robots.txt respekt, progress callback
+
 ### Další kroky
-- [ ] SEO audit handler — crawler (Playwright + cheerio) + analyzéry + AI compilation (nahradí placeholder)
+- [ ] SEO audit handler — propojení crawleru + analyzéry + AI compilation (nahradí placeholder v registry)
+- [ ] Analyzéry (indexability, architecture, security, structured-data, on-page, aeo-geo, international)
+- [ ] AI compilation (Claude Sonnet — executive summary, Impact/Effort scoring, akční plán)
 - [ ] Job result viewer — zobrazení TechnicalAuditResult dat
 - [ ] Aplikovat migraci 003 (`npm run db:migrate`)
 

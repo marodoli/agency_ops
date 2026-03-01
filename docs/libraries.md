@@ -164,6 +164,18 @@ POST   /api/jobs/[id]  {action:"cancel"} → Cancel running job
 - **Job status page** (`clients/[id]/jobs/[jobId]/page.tsx`): RSC, fetchuje job + client by slug, renders JobProgressCard.
 - **Validace** (`lib/validations/job.ts`): jobLauncherSchema — client_id, domain, crawl_depth, max_pages, custom_instructions.
 
+### Crawler
+- **Modul** (`workers/job-runner/src/jobs/seo/technical-audit/crawler.ts`): BFS crawler, exportuje `crawl(config): Promise<CrawlResult>`.
+- **resolveBaseUrl**: testuje https / https+www / http, follow redirects, vrací origin.
+- **fetchRobotsTxt**: `robots-parser`, vrací parser + raw text. Graceful fallback při 404/error.
+- **fetchSitemapUrls**: hledá Sitemap: direktivy v robots.txt (fallback `/sitemap.xml`). Parsuje sitemap index (1 level) + regulární sitemap přes `xml2js`.
+- **parsePage** (cheerio): extrahuje title, metaDescription, canonical, metaRobots, viewport, hreflang, h1-h3, wordCount, internalLinks, externalLinks, images, jsonLd, redirectChain. Discover internal links pro BFS queue.
+- **fetchPage**: manuální redirect tracking (max 10 hops), `AbortSignal.timeout(10s)`, filtruje jen HTML content-type.
+- **Concurrency**: Semaphore class (max 5), 200ms politeness delay mezi requesty.
+- **robots.txt respekt**: `robots.isAllowed(url, USER_AGENT)` check před každým fetch.
+- **User-Agent**: `MacroBot/1.0 (+https://macroconsulting.cz/bot)`.
+- **Progress**: callback každých 10 stránek (crawled/total).
+
 ### Job Creation Payload
 ```typescript
 // POST /api/jobs
