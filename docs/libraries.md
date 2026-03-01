@@ -185,10 +185,15 @@ POST   /api/jobs/[id]  {action:"cancel"} → Cancel running job
 - **Timeout**: 60s per request (PSI bývá pomalé). Graceful fallback při chybě (skip s warning).
 
 ### Analyzéry
-- **Framework** (`analyzers/base.ts`): `AnalyzerInput` = `{ pages: CrawledPage[], robotsTxt, sitemapUrls }`. `Analyzer` = `(input) => Issue[]`.
+- **Framework** (`analyzers/base.ts`): `AnalyzerInput` = `{ pages: CrawledPage[], robotsTxt, sitemapUrls, pageSpeedResults? }`. `Analyzer` = `(input) => Issue[]`.
 - **IndexabilityAnalyzer** (`analyzers/indexability.ts`): noindex v sitemapě (CRITICAL), canonical na 404/noindex/redirect (CRITICAL), canonical chaining (WARNING), non-200 v sitemapě (WARNING), missing self-canonical (WARNING), robots.txt blokace důležitých stránek (CRITICAL).
 - **OnPageAnalyzer** (`analyzers/on-page.ts`): missing title (CRITICAL), duplicate titles (WARNING), title >60 chars (INFO), title <30 chars (WARNING), missing/duplicate meta description (WARNING), missing H1 (CRITICAL), multiple H1 (WARNING), H1=title (INFO), thin content <300 slov (WARNING), images missing alt (WARNING), images >150KB (INFO), missing max-image-preview:large (INFO).
 - **SecurityAnalyzer** (`analyzers/security.ts`): HTTP bez HTTPS (CRITICAL), mixed content (WARNING), HSTS check (INFO), redirect chain >2 hops (WARNING), redirect loop (CRITICAL), 302 vs 301 (INFO).
+- **ArchitectureAnalyzer** (`analyzers/architecture.ts`): click depth >5 (CRITICAL), click depth >4 (WARNING), orphan pages v sitemapě (WARNING), stránky <3 interních odkazů (INFO), URL s parametry bez canonical (WARNING), non-lowercase URL (INFO), URL >115 znaků (INFO).
+- **StructuredDataAnalyzer** (`analyzers/structured-data.ts`): missing Organization schema (WARNING), missing BreadcrumbList na multi-level (WARNING), blog bez Article/BlogPosting (INFO), FAQ bez FAQPage schema (INFO), e-commerce bez Product schema (WARNING), JSON-LD validační chyby (WARNING).
+- **PerformanceAnalyzer** (`analyzers/performance.ts`): LCP >4s (CRITICAL) / >2.5s (WARNING), INP >500ms (CRITICAL) / >200ms (WARNING), CLS >0.25 (CRITICAL) / >0.1 (WARNING), TTFB >600ms (WARNING) / >200ms (INFO), performance score <50 (CRITICAL) / <90 (WARNING). Vstup z `pageSpeedResults`.
+- **AeoGeoAnalyzer** (`analyzers/aeo-geo.ts`): GPTBot blokován (WARNING), ClaudeBot blokován (WARNING), PerplexityBot blokován (WARNING), missing llms.txt (INFO), články bez author schema (INFO), missing "O nás" stránka (INFO), obsahové stránky bez externích citací (INFO).
+- **InternationalAnalyzer** (`analyzers/international.ts`): nereciproční hreflang (CRITICAL), hreflang na 404/redirect (CRITICAL), missing x-default (WARNING), neplatné language codes (WARNING). Běží jen pokud existují hreflang tagy.
 
 ### Job Creation Payload
 ```typescript
