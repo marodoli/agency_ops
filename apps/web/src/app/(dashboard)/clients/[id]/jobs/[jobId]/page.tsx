@@ -3,9 +3,15 @@ import { notFound, redirect } from "next/navigation";
 import { ArrowLeft } from "lucide-react";
 import Link from "next/link";
 
+import { TechnicalAuditResultSchema } from "@agency-ops/shared";
 import { createClient } from "@/lib/supabase/server";
 import { JobProgressCard } from "@/components/jobs/job-progress-card";
 import { Button } from "@/components/ui/button";
+import { Separator } from "@/components/ui/separator";
+import { ReportHeader } from "@/components/seo/report-header";
+import { ScoreCards } from "@/components/seo/score-cards";
+import { CategorySection } from "@/components/seo/category-section";
+import { ActionPlan } from "@/components/seo/action-plan";
 
 type RouteParams = { params: Promise<{ id: string; jobId: string }> };
 
@@ -49,8 +55,14 @@ export default async function JobStatusPage({ params }: RouteParams) {
 
   const jobError = job.error as { message: string; code?: string } | null;
 
+  // Parse report for completed jobs
+  const reportParse = job.status === "completed" && job.result
+    ? TechnicalAuditResultSchema.safeParse(job.result)
+    : null;
+  const report = reportParse?.success ? reportParse.data : null;
+
   return (
-    <div className="mx-auto max-w-xl">
+    <div className={`mx-auto ${report ? "max-w-5xl" : "max-w-xl"}`}>
       <Button
         asChild
         variant="ghost"
@@ -74,6 +86,32 @@ export default async function JobStatusPage({ params }: RouteParams) {
         error={jobError}
         clientSlug={slug}
       />
+
+      {report && job.completed_at && (
+        <>
+          <Separator className="my-8" />
+
+          <div className="space-y-8">
+            <ReportHeader
+              domain={
+                report.pages[0]?.url
+                  ? new URL(report.pages[0].url).hostname
+                  : "N/A"
+              }
+              clientName={client.name}
+              completedAt={job.completed_at}
+              durationMs={report.summary.crawl_duration_ms}
+              totalPagesCrawled={report.summary.total_pages_crawled}
+            />
+
+            <ScoreCards summary={report.summary} />
+
+            <ActionPlan aiRecommendations={report.ai_recommendations} />
+
+            <CategorySection categories={report.categories} />
+          </div>
+        </>
+      )}
     </div>
   );
 }

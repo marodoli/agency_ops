@@ -161,7 +161,14 @@ POST   /api/jobs/[id]  {action:"cancel"} → Cancel running job
 - **Job launcher form** (`components/jobs/job-launcher-form.tsx`): "use client", React Hook Form + Zod. Client selector (Select), doména (auto-fill z klienta, cleanDomain strip protokol/www), crawl depth (1-5), max pages (10/50/100/250/500), custom instructions, dynamický odhad času. POST `/api/jobs` → redirect na `/clients/{slug}/jobs/{jobId}`.
 - **Job progress card** (`components/jobs/job-progress-card.tsx`): "use client", `useJobProgress` hook pro realtime. Stavy: queued (Clock + pulse), running (Progress bar + Loader2 + elapsed timer), completed (CheckCircle + link), failed (XCircle + error detail refetch), cancelled (Ban). ElapsedTimer subcomponent s setInterval.
 - **Technical audit page** (`seo/technical-audit/page.tsx`): RSC, fetchuje clients (RLS), renders JobLauncherForm.
-- **Job status page** (`clients/[id]/jobs/[jobId]/page.tsx`): RSC, fetchuje job + client by slug, renders JobProgressCard.
+- **Job status page** (`clients/[id]/jobs/[jobId]/page.tsx`): RSC, fetchuje job + client by slug, renders JobProgressCard. Pro completed joby s výsledkem: Zod safeParse `TechnicalAuditResultSchema`, rozšíří container na `max-w-5xl`, renderuje ReportHeader + ScoreCards + ActionPlan + CategorySection.
+- **SEO report viewer** (`components/seo/`): 5 komponent pro zobrazení výsledků technické SEO analýzy.
+  - `report-header.tsx` — Server component: doména, klient, datum (date-fns cs locale), doba, počet stránek.
+  - `score-cards.tsx` — Server component: grid 4 karet (overall score, critical, warning, info) s color-coded gradient.
+  - `category-section.tsx` — Client component: Accordion per kategorie (11 kategorií), issues sorted severity (critical→warning→info), score badge per kategorie.
+  - `issue-card.tsx` — Client component: severity border-left, badge, description, recommendation box (Lightbulb), Collapsible affected URLs (max 20).
+  - `action-plan.tsx` — Client component: parsuje AI markdown (Executive Summary, Sprint 1/2 s checkboxy, Backlog s bullets). Fallback info alert pokud AI nebyla k dispozici.
+- **SEO utility** (`lib/seo-utils.ts`): Score gradient helpers (0-39 error, 40-69 warning, 70-89 info, 90-100 success), severity helpers, `CATEGORY_LABELS` (11 českých názvů), `parseAiRecommendations()` markdown parser.
 - **Validace** (`lib/validations/job.ts`): jobLauncherSchema — client_id, domain, crawl_depth, max_pages, custom_instructions.
 
 ### Crawler
@@ -378,7 +385,7 @@ tailwindcss ^4, @tailwindcss/postcss ^4
 shadcn/ui (radix-ui, class-variance-authority, clsx, tailwind-merge, tw-animate-css)
   → components: button, card, input, label, textarea, select, badge, dialog,
     dropdown-menu, separator, skeleton, table, tabs, progress, sonner (replaces toast),
-    tooltip, avatar, sheet
+    tooltip, avatar, sheet, accordion, collapsible, checkbox
 zustand ^5
 react-hook-form ^7, @hookform/resolvers ^3, zod ^3
 date-fns ^4
