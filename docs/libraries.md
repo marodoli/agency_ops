@@ -150,7 +150,7 @@ POST   /api/jobs/[id]  {action:"cancel"} → Cancel running job
 - Auto-cleanup: `supabase.removeChannel(channel)` na unmount.
 
 ### Worker Infrastructure
-- **Entry point** (`workers/job-runner/src/index.ts`): poll loop každých 5s (`JOB_POLL_INTERVAL_MS`), graceful shutdown (SIGTERM/SIGINT).
+- **Entry point** (`workers/job-runner/src/index.ts`): poll loop každých 5s (`JOB_POLL_INTERVAL_MS`), graceful shutdown (SIGTERM/SIGINT). Dev script: `tsx watch --env-file=../../.env.local src/index.ts`.
 - **Queue consumer** (`queue/consumer.ts`): `pollForJob()` volá `claim_next_job` RPC (atomic claim, FOR UPDATE SKIP LOCKED). `updateProgress`, `completeJob`, `failJob` (retry logika: re-queue pokud `retryCount < maxRetries`, jinak permanent fail).
 - **Handler registry** (`jobs/registry.ts`): `registerHandler(jobType, handler)` / `getHandler(jobType)`. Handler interface: `(job: Job, updateProgress: ProgressFn) => Promise<Record<string, unknown>>`. Registruje `handleTechnicalAudit` pro `seo.technical-audit`.
 - **Timeout watchdog**: z `timeout_at` nebo `JOB_TYPE_REGISTRY.defaultTimeoutMs`. Heartbeat re-sends progress každých 30s.
