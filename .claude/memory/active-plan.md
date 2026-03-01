@@ -1,6 +1,6 @@
 # Active Plan — Agency Ops
 
-## Aktuální stav: BLOK 9 — Crawler + PageSpeed (hotovo)
+## Aktuální stav: BLOK 10 — Analyzéry 1/3 (hotovo)
 
 ### Hotovo
 - [x] BLOK 1: DB schema + RLS policies + helper funkce
@@ -50,9 +50,14 @@
 
 - [x] BLOK 9: PageSpeed Insights (`pagespeed.ts`) — selectUrlsForPageSpeed (homepage + top N by inlinks), runPageSpeed (mobile+desktop), CrUX field data preferováno, Lighthouse lab fallback, 1.1s rate limit, optional PSI_API_KEY
 
+- [x] BLOK 10: Analyzer framework (`analyzers/base.ts`) — AnalyzerInput type, Analyzer function type
+- [x] BLOK 10: IndexabilityAnalyzer — noindex v sitemapě, canonical na 404/noindex/redirect, canonical chaining, non-200 v sitemapě, missing self-canonical, robots.txt blokace
+- [x] BLOK 10: OnPageAnalyzer — missing/duplicate/long/short title, missing/duplicate meta desc, missing/multiple H1, H1=title, thin content, missing alt, large images, missing max-image-preview
+- [x] BLOK 10: SecurityAnalyzer — HTTP bez HTTPS, mixed content, HSTS check, redirect chain >2, redirect loops, 302 vs 301
+
 ### Další kroky
-- [ ] SEO audit handler — propojení crawleru + PageSpeed + analyzéry + AI compilation (nahradí placeholder v registry)
-- [ ] Analyzéry (indexability, architecture, security, structured-data, on-page, aeo-geo, international)
+- [ ] Zbývající analyzéry (architecture, structured-data, performance, aeo-geo, international)
+- [ ] SEO audit handler — propojení crawleru + PageSpeed + analyzéry + AI compilation
 - [ ] AI compilation (Claude Sonnet — executive summary, Impact/Effort scoring, akční plán)
 - [ ] Job result viewer — zobrazení TechnicalAuditResult dat
 - [ ] Aplikovat migraci 003 (`npm run db:migrate`)

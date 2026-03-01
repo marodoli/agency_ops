@@ -184,6 +184,12 @@ POST   /api/jobs/[id]  {action:"cancel"} → Cancel running job
 - **API klíč**: volitelný `PSI_API_KEY` env var (vyšší limity). Bez klíče: 25k req/day free tier.
 - **Timeout**: 60s per request (PSI bývá pomalé). Graceful fallback při chybě (skip s warning).
 
+### Analyzéry
+- **Framework** (`analyzers/base.ts`): `AnalyzerInput` = `{ pages: CrawledPage[], robotsTxt, sitemapUrls }`. `Analyzer` = `(input) => Issue[]`.
+- **IndexabilityAnalyzer** (`analyzers/indexability.ts`): noindex v sitemapě (CRITICAL), canonical na 404/noindex/redirect (CRITICAL), canonical chaining (WARNING), non-200 v sitemapě (WARNING), missing self-canonical (WARNING), robots.txt blokace důležitých stránek (CRITICAL).
+- **OnPageAnalyzer** (`analyzers/on-page.ts`): missing title (CRITICAL), duplicate titles (WARNING), title >60 chars (INFO), title <30 chars (WARNING), missing/duplicate meta description (WARNING), missing H1 (CRITICAL), multiple H1 (WARNING), H1=title (INFO), thin content <300 slov (WARNING), images missing alt (WARNING), images >150KB (INFO), missing max-image-preview:large (INFO).
+- **SecurityAnalyzer** (`analyzers/security.ts`): HTTP bez HTTPS (CRITICAL), mixed content (WARNING), HSTS check (INFO), redirect chain >2 hops (WARNING), redirect loop (CRITICAL), 302 vs 301 (INFO).
+
 ### Job Creation Payload
 ```typescript
 // POST /api/jobs
