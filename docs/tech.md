@@ -90,7 +90,9 @@ agency_ops/
 │       │   │   │   ├── jobs/
 │       │   │   │   │   ├── route.ts            # POST: create job, GET: list jobs
 │       │   │   │   │   └── [id]/
-│       │   │   │   │       └── route.ts        # GET: job status + results
+│       │   │   │   │       ├── route.ts        # GET: job status + results
+│       │   │   │   │       └── pdf/
+│       │   │   │   │           └── route.tsx   # GET: export job as PDF
 │       │   │   │   └── clients/
 │       │   │   │       └── route.ts            # CRUD for clients
 │       │   │   ├── layout.tsx
@@ -107,6 +109,9 @@ agency_ops/
 │       │   │   │   ├── server.ts     # Server-side Supabase client
 │       │   │   │   └── middleware.ts # Auth middleware for protected routes
 │       │   │   ├── utils.ts          # Shared utilities
+│       │   │   ├── pdf/              # PDF generation (server-side)
+│       │   │   │   ├── fonts.ts     # Poppins + JetBrains Mono registration
+│       │   │   │   └── seo-report-pdf.tsx  # SEO audit PDF document
 │       │   │   └── validations/      # Zod schemas
 │       │   ├── hooks/                # Custom React hooks
 │       │   └── types/                # Shared TypeScript types

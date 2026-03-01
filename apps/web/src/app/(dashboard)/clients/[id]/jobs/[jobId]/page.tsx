@@ -93,6 +93,7 @@ export default async function JobStatusPage({ params }: RouteParams) {
 
           <div className="space-y-8">
             <ReportHeader
+              jobId={job.id}
               domain={
                 report.pages[0]?.url
                   ? new URL(report.pages[0].url).hostname

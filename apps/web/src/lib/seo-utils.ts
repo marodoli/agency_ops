@@ -190,6 +190,18 @@ function extractListItems(section: string): string[] {
     .filter(Boolean);
 }
 
+// ── Audit limitations (shared between UI component and PDF) ──
+
+export const AUDIT_LIMITATIONS = [
+  "Bez přístupu ke Google Search Console – nelze ověřit reálný stav indexace Google.",
+  "Bez přístupu k server logům – nelze analyzovat crawl budget.",
+  "JS rendering na vzorku – některé JS issues mohou být přehlédnuty.",
+  "Near-duplicate detection není implementován.",
+  "PageSpeed data jsou laboratorní (lab), ne polní (field/CrUX).",
+];
+
+// ── AI recommendations parser ──────────────────────────────
+
 export function parseAiRecommendations(markdown: string): ParsedRecommendations {
   const result: ParsedRecommendations = {
     executiveSummary: "",

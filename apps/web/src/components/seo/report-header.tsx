@@ -1,10 +1,12 @@
 import { format } from "date-fns";
 import { cs } from "date-fns/locale";
-import { Globe, Calendar, Clock, FileText } from "lucide-react";
+import { Globe, Calendar, Clock, FileText, Download } from "lucide-react";
 
 import { Card, CardContent } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
 
 type ReportHeaderProps = {
+  jobId: string;
   domain: string;
   clientName: string;
   completedAt: string;
@@ -13,6 +15,7 @@ type ReportHeaderProps = {
 };
 
 export function ReportHeader({
+  jobId,
   domain,
   clientName,
   completedAt,
@@ -27,9 +30,17 @@ export function ReportHeader({
   return (
     <Card>
       <CardContent className="grid gap-2">
-        <h1 className="text-xl font-semibold">
-          Technická SEO analýza: {domain}
-        </h1>
+        <div className="flex items-center justify-between">
+          <h1 className="text-xl font-semibold">
+            Technická SEO analýza: {domain}
+          </h1>
+          <Button asChild variant="outline" size="sm">
+            <a href={`/api/jobs/${jobId}/pdf`} download>
+              <Download className="size-4" />
+              Stáhnout PDF
+            </a>
+          </Button>
+        </div>
         <div className="flex flex-wrap gap-x-5 gap-y-1 text-sm text-muted-foreground">
           <span className="flex items-center gap-1.5">
             <Globe className="size-3.5" />

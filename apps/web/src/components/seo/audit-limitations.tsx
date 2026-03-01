@@ -1,14 +1,7 @@
 import { AlertTriangle } from "lucide-react";
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-
-const LIMITATIONS = [
-  "Bez přístupu ke Google Search Console – nelze ověřit reálný stav indexace Google.",
-  "Bez přístupu k server logům – nelze analyzovat crawl budget.",
-  "JS rendering na vzorku – některé JS issues mohou být přehlédnuty.",
-  "Near-duplicate detection není implementován.",
-  "PageSpeed data jsou laboratorní (lab), ne polní (field/CrUX).",
-];
+import { AUDIT_LIMITATIONS } from "@/lib/seo-utils";
 
 export function AuditLimitations() {
   return (
@@ -21,7 +14,7 @@ export function AuditLimitations() {
       </CardHeader>
       <CardContent>
         <ul className="space-y-2">
-          {LIMITATIONS.map((text, i) => (
+          {AUDIT_LIMITATIONS.map((text, i) => (
             <li
               key={i}
               className="flex items-start gap-2 text-sm text-muted-foreground"

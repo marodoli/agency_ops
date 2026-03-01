@@ -134,6 +134,7 @@ GET    /api/jobs?client_id=X           → List jobs for client
 POST   /api/jobs                       → Create (queue) new job
 GET    /api/jobs/[id]                  → Get job status + results
 POST   /api/jobs/[id]  {action:"cancel"} → Cancel running job
+GET    /api/jobs/[id]/pdf              → Export job results as PDF
 ```
 
 **Implementační poznámky:**
@@ -142,6 +143,7 @@ POST   /api/jobs/[id]  {action:"cancel"} → Cancel running job
 - GET `/api/jobs/[id]` — vrací `select("*")`, RLS zajistí přístup jen k vlastním klientům.
 - POST `/api/jobs/[id]` — action `cancel`: kontroluje stav `queued`/`running` (jinak 409 INVALID_STATE). Nastaví `status: "cancelled"` + `completed_at`. Zapisuje `audit_log` (action: `job.cancelled`).
 - Zod schemas importovány z `@agency-ops/shared` — single source of truth pro validaci (ADR-011).
+- GET `/api/jobs/[id]/pdf` — renderuje SEO audit result do PDF via `@react-pdf/renderer`. Parsuje AI data (parseIssueScores + parseAiRecommendations). Filename: `seo-audit-{domain}-{date}.pdf`. RLS auth, maxDuration 30s.
 
 ### Realtime Hook
 - `useJobProgress(jobId, initialState?)` — client-side hook pro Supabase Realtime.
@@ -163,7 +165,7 @@ POST   /api/jobs/[id]  {action:"cancel"} → Cancel running job
 - **Technical audit page** (`seo/technical-audit/page.tsx`): RSC, fetchuje clients (RLS), renders JobLauncherForm.
 - **Job status page** (`clients/[id]/jobs/[jobId]/page.tsx`): RSC, fetchuje job + client by slug, renders JobProgressCard. Pro completed joby s výsledkem: Zod safeParse `TechnicalAuditResultSchema`, rozšíří container na `max-w-5xl`, renderuje ReportHeader + ScoreCards + ReportTabs. Server-side `parseIssueScores()` předá scored issues jako prop.
 - **SEO report viewer** (`components/seo/`): 11 komponent pro zobrazení výsledků technické SEO analýzy.
-  - `report-header.tsx` — Server component: doména, klient, datum (date-fns cs locale), doba, počet stránek.
+  - `report-header.tsx` — Server component: doména, klient, datum (date-fns cs locale), doba, počet stránek. "Stáhnout PDF" tlačítko (→ `/api/jobs/[id]/pdf`).
   - `score-cards.tsx` — Server component: grid 4 karet (overall score, critical, warning, info) s color-coded gradient.
   - `report-tabs.tsx` — Client component (orchestrátor): 4 taby (Nálezy, Akční plán, Statistiky, Omezení). Vlastní filter state (severity, categories, search), sheet state pro issue detail. Badge s počtem issues na tabu Nálezy.
   - `issue-filter-bar.tsx` — Client component: 3 ovládací prvky — text search (Input + Search/X ikony), severity toggle pills (Vše/Kritické/Varování/Info s počty), category dropdown (DropdownMenuCheckboxItem pro 11 kategorií).
@@ -174,7 +176,8 @@ POST   /api/jobs/[id]  {action:"cancel"} → Cancel running job
   - `crawl-stats-tab.tsx` — Client component: grid 2×2 — total pages stat, status codes pie chart (2xx/3xx/4xx/5xx, recharts PieChart), response time histogram (5 bucketů <200ms→>2s, recharts BarChart), top 10 nejpomalejších stránek (sorted desc, external links, load_time color-coded).
   - `audit-limitations.tsx` — Static component: 5 disclaimerů (bez GSC, bez server logů, JS rendering na vzorku, bez near-duplicate, lab vs field data).
   - `category-section.tsx` — Client component (legacy, stále exportován): Accordion per kategorie (11 kategorií), issues sorted severity. Používán jen pokud by ReportTabs nebyl potřeba.
-- **SEO utility** (`lib/seo-utils.ts`): Score gradient helpers (0-39 error, 40-69 warning, 70-89 info, 90-100 success), severity helpers, `CATEGORY_LABELS` (11 českých názvů), `SEVERITY_LABELS` (české), `SEVERITY_ORDER`, `parseAiRecommendations()` markdown parser, `parseIssueScores()` (regex parser pro Impact×Effort sekci z AI markdownu → `Record<string, ScoredIssue>`), `getQuadrantColor/Bg()` helpers, `ScoredIssue` type.
+- **SEO utility** (`lib/seo-utils.ts`): Score gradient helpers (0-39 error, 40-69 warning, 70-89 info, 90-100 success), severity helpers, `CATEGORY_LABELS` (11 českých názvů), `SEVERITY_LABELS` (české), `SEVERITY_ORDER`, `AUDIT_LIMITATIONS` (5 disclaimerů — sdíleno s PDF), `parseAiRecommendations()` markdown parser, `parseIssueScores()` (regex parser pro Impact×Effort sekci z AI markdownu → `Record<string, ScoredIssue>`), `getQuadrantColor/Bg()` helpers, `ScoredIssue` type.
+- **PDF export** (`lib/pdf/`): `fonts.ts` — idempotentní registrace Poppins (400/500/600) + JetBrains Mono z Google Fonts CDN. `seo-report-pdf.tsx` — React PDF Document component (A4, MacroConsulting branding): titulní strana, executive summary, score overview, kategorie s issues, akční plán tabulka, omezení, footer s čísly stránek.
 - **Validace** (`lib/validations/job.ts`): jobLauncherSchema — client_id, domain, crawl_depth, max_pages, custom_instructions.
 
 ### Crawler
@@ -393,6 +396,7 @@ shadcn/ui (radix-ui, class-variance-authority, clsx, tailwind-merge, tw-animate-
     dropdown-menu, separator, skeleton, table, tabs, progress, sonner (replaces toast),
     tooltip, avatar, sheet, accordion, collapsible, checkbox, chart (recharts wrapper)
 recharts ^2 (via shadcn chart component — PieChart, BarChart pro crawl stats)
+@react-pdf/renderer ^4 (server-side PDF generation for SEO reports)
 zustand ^5
 react-hook-form ^7, @hookform/resolvers ^3, zod ^3
 date-fns ^4
