@@ -152,7 +152,7 @@ POST   /api/jobs/[id]  {action:"cancel"} → Cancel running job
 ### Worker Infrastructure
 - **Entry point** (`workers/job-runner/src/index.ts`): poll loop každých 5s (`JOB_POLL_INTERVAL_MS`), graceful shutdown (SIGTERM/SIGINT).
 - **Queue consumer** (`queue/consumer.ts`): `pollForJob()` volá `claim_next_job` RPC (atomic claim, FOR UPDATE SKIP LOCKED). `updateProgress`, `completeJob`, `failJob` (retry logika: re-queue pokud `retryCount < maxRetries`, jinak permanent fail).
-- **Handler registry** (`jobs/registry.ts`): `registerHandler(jobType, handler)` / `getHandler(jobType)`. Handler interface: `(job: Job, updateProgress: ProgressFn) => Promise<Record<string, unknown>>`.
+- **Handler registry** (`jobs/registry.ts`): `registerHandler(jobType, handler)` / `getHandler(jobType)`. Handler interface: `(job: Job, updateProgress: ProgressFn) => Promise<Record<string, unknown>>`. Registruje `handleTechnicalAudit` pro `seo.technical-audit`.
 - **Timeout watchdog**: z `timeout_at` nebo `JOB_TYPE_REGISTRY.defaultTimeoutMs`. Heartbeat re-sends progress každých 30s.
 - **Audit log**: worker zapisuje `job.completed` a `job.failed` do `audit_log` tabulky.
 - **Migration 003** (`claim_next_job`): `SECURITY DEFINER` PostgreSQL funkce, `RETURNS SETOF jobs`, `SET search_path = public`.
@@ -203,6 +203,15 @@ POST   /api/jobs/[id]  {action:"cancel"} → Cancel running job
 - **Input**: `{ issues: Issue[], crawlStats: CrawlStats, techStack?: string, customInstructions?: string }`. Issues seskupené podle severity, affected_urls count (ne plné URL).
 - **Output**: `AiReportSchema` (Zod): `executive_summary`, `scored_issues[]` (title, severity, impact, effort, quadrant, recommendation), `action_plan` (sprint_1, sprint_2, backlog), `recommendations_text`.
 - **Error handling**: Retry 2× s exponential backoff (1s, 2s). Při selhání vrátí `null` (report pokračuje bez AI summary). JSON response parsing s markdown fence stripping.
+
+### SEO Audit Handler (Orchestrátor)
+- **Modul** (`jobs/seo/technical-audit/handler.ts`): `handleTechnicalAudit(job, updateProgress)` — 6-krokový pipeline.
+- **Pipeline kroky**: Preparation (0→5%) → Crawl (5→50%) → PageSpeed (50→60%) → Analysis (60→80%) → AI Compilation (80→95%) → Report Assembly (95→100%).
+- **Analyzéry**: 8 analyzérů běží paralelně (`Promise.all`): indexability, on-page, security, architecture, structured-data, performance, aeo-geo, international.
+- **Kategorie mapping**: 11 kategorií v `TechnicalAuditResult.categories` — některé analyzéry mapují na více kategorií (např. performance → `performance` + `core_web_vitals`), některé kategorie filtrují issues z jiných analyzérů (např. `sitemap_robots` filtruje z indexability, `redirects` z security).
+- **Score calculation**: `calculateOverallScore` — weighted penalty (critical×10, warning×3, info×0.5) škálováno log10(totalPages). `calculateCategoryScore` — penalty (critical=15, warning=5, info=1).
+- **Error handling**: Crawl selhání = abort job (throw). PageSpeed selhání = degraded mode (pokračuje bez PSI dat). AI selhání = degraded mode (pokračuje bez AI summary).
+- **Limity**: max 100 stránek v `pages` výstupu (prevence oversized results), jen HTTP 200 stránky.
 
 ### Job Creation Payload
 ```typescript
