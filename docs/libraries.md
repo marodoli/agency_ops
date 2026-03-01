@@ -176,6 +176,14 @@ POST   /api/jobs/[id]  {action:"cancel"} → Cancel running job
 - **User-Agent**: `MacroBot/1.0 (+https://macroconsulting.cz/bot)`.
 - **Progress**: callback každých 10 stránek (crawled/total).
 
+### PageSpeed Insights
+- **Modul** (`workers/job-runner/src/jobs/seo/technical-audit/pagespeed.ts`): exportuje `runPageSpeed(config)` a `selectUrlsForPageSpeed(pages, topN)`.
+- **selectUrlsForPageSpeed**: homepage (depth 0) + top N stránek dle počtu inbound linků z crawl dat.
+- **runPageSpeed**: volá PSI API (mobile + desktop), 1.1s rate limit. Preferuje CrUX field data (p75 percentile), fallback na Lighthouse lab data.
+- **Metriky**: `performanceScore` (0-100), `lcp` (ms), `inp` (ms, field) / `tbt` (lab proxy), `cls`, `ttfb` (ms). `source: "field" | "lab"`.
+- **API klíč**: volitelný `PSI_API_KEY` env var (vyšší limity). Bez klíče: 25k req/day free tier.
+- **Timeout**: 60s per request (PSI bývá pomalé). Graceful fallback při chybě (skip s warning).
+
 ### Job Creation Payload
 ```typescript
 // POST /api/jobs

@@ -1,6 +1,6 @@
 # Active Plan — Agency Ops
 
-## Aktuální stav: BLOK 9 — Crawler (hotovo)
+## Aktuální stav: BLOK 9 — Crawler + PageSpeed (hotovo)
 
 ### Hotovo
 - [x] BLOK 1: DB schema + RLS policies + helper funkce
@@ -48,8 +48,10 @@
 
 - [x] BLOK 9: BFS crawler (`jobs/seo/technical-audit/crawler.ts`) — resolveBaseUrl, fetchRobotsTxt (robots-parser), fetchSitemapUrls (xml2js, sitemap index support), parsePage (cheerio, všechna CrawledPage pole), fetchPage (manual redirect tracking), Semaphore (max 5 concurrent), 200ms politeness, robots.txt respekt, progress callback
 
+- [x] BLOK 9: PageSpeed Insights (`pagespeed.ts`) — selectUrlsForPageSpeed (homepage + top N by inlinks), runPageSpeed (mobile+desktop), CrUX field data preferováno, Lighthouse lab fallback, 1.1s rate limit, optional PSI_API_KEY
+
 ### Další kroky
-- [ ] SEO audit handler — propojení crawleru + analyzéry + AI compilation (nahradí placeholder v registry)
+- [ ] SEO audit handler — propojení crawleru + PageSpeed + analyzéry + AI compilation (nahradí placeholder v registry)
 - [ ] Analyzéry (indexability, architecture, security, structured-data, on-page, aeo-geo, international)
 - [ ] AI compilation (Claude Sonnet — executive summary, Impact/Effort scoring, akční plán)
 - [ ] Job result viewer — zobrazení TechnicalAuditResult dat
