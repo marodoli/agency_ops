@@ -194,6 +194,15 @@ POST   /api/jobs/[id]  {action:"cancel"} → Cancel running job
 - **PerformanceAnalyzer** (`analyzers/performance.ts`): LCP >4s (CRITICAL) / >2.5s (WARNING), INP >500ms (CRITICAL) / >200ms (WARNING), CLS >0.25 (CRITICAL) / >0.1 (WARNING), TTFB >600ms (WARNING) / >200ms (INFO), performance score <50 (CRITICAL) / <90 (WARNING). Vstup z `pageSpeedResults`.
 - **AeoGeoAnalyzer** (`analyzers/aeo-geo.ts`): GPTBot blokován (WARNING), ClaudeBot blokován (WARNING), PerplexityBot blokován (WARNING), missing llms.txt (INFO), články bez author schema (INFO), missing "O nás" stránka (INFO), obsahové stránky bez externích citací (INFO).
 - **InternationalAnalyzer** (`analyzers/international.ts`): nereciproční hreflang (CRITICAL), hreflang na 404/redirect (CRITICAL), missing x-default (WARNING), neplatné language codes (WARNING). Běží jen pokud existují hreflang tagy.
+- **Unit testy** (`analyzers/__tests__/analyzers.test.ts`): 63 testů pro všech 8 analyzérů (vitest). Mock factory `makePage()` + `makeInput()` + `makePSI()`.
+
+### AI Compilation
+- **Modul** (`lib/ai.ts`): Anthropic client wrapper, `generateSeoReport(input)`.
+- **Model**: `claude-sonnet-4-6`, max_tokens 4096.
+- **System prompt**: Senior SEO analytik, český výstup. Impact (1-5) × Effort (1-5) scoring, kvadranty (quick_win, major_project, fill_in, time_waster), akční plán (sprint 1/2/backlog).
+- **Input**: `{ issues: Issue[], crawlStats: CrawlStats, techStack?: string, customInstructions?: string }`. Issues seskupené podle severity, affected_urls count (ne plné URL).
+- **Output**: `AiReportSchema` (Zod): `executive_summary`, `scored_issues[]` (title, severity, impact, effort, quadrant, recommendation), `action_plan` (sprint_1, sprint_2, backlog), `recommendations_text`.
+- **Error handling**: Retry 2× s exponential backoff (1s, 2s). Při selhání vrátí `null` (report pokračuje bez AI summary). JSON response parsing s markdown fence stripping.
 
 ### Job Creation Payload
 ```typescript
