@@ -94,3 +94,11 @@
 **Decision:** Admin check na 3 úrovních: frontend (redirect/skrytí UI), API route (profiles.role check), Supabase (RLS policies).
 **Context:** Frontend check je UX (neobtěžuj non-adminy formuláři). API check je autorizace. RLS je safety net.
 **Consequences:** Každá PATCH/DELETE/POST operace na klientech kontroluje `profiles.role === "admin"` v API route. RLS pak filtruje i to, co admin vidí (jen své klienty).
+
+### ADR-017: claim_next_job RPC pro atomický job claim (2026-03-01)
+**Decision:** PostgreSQL funkce `claim_next_job()` s `FOR UPDATE SKIP LOCKED` pro atomické přiřazení jobu workerovi.
+**Context:** Supabase JS client nepodporuje `FOR UPDATE SKIP LOCKED`. Bez atomického claimu hrozí double pickup při více workerech.
+**Alternatives considered:**
+- Two-step SELECT + UPDATE s WHERE check: race condition window, méně spolehlivé.
+- Redis/BullMQ: overkill pro MVP volume (ADR-002).
+**Consequences:** Migrace 003. Worker volá `supabase.rpc("claim_next_job")`. Funkce vrací 0 nebo 1 řádek (claimed job). SECURITY DEFINER, worker používá service_role key.

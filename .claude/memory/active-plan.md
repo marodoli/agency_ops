@@ -1,6 +1,6 @@
 # Active Plan — Agency Ops
 
-## Aktuální stav: BLOK 6 — Job API + Realtime (hotovo)
+## Aktuální stav: BLOK 7 — Job Worker Infrastructure (hotovo)
 
 ### Hotovo
 - [x] BLOK 1: DB schema + RLS policies + helper funkce
@@ -35,12 +35,19 @@
 - [x] BLOK 6: POST /api/jobs/[id] action=cancel — zrušení jobu (stav check queued/running, 409 pro ostatní stavy, audit_log)
 - [x] BLOK 6: useJobProgress hook — Supabase Realtime subscription (postgres_changes UPDATE na jobs tabulku, auto-cleanup na unmount)
 
+- [x] BLOK 7: Migration 003 — `claim_next_job()` RPC funkce (FOR UPDATE SKIP LOCKED, atomic job claiming)
+- [x] BLOK 7: Queue consumer (`queue/consumer.ts`) — pollForJob, updateProgress, completeJob, failJob (retry logika)
+- [x] BLOK 7: Job handler registry (`jobs/registry.ts`) — registerHandler/getHandler + placeholder seo.technical-audit
+- [x] BLOK 7: Worker entry point (`index.ts`) — poll loop 5s, timeout watchdog, 30s heartbeat, max 3 retries, pino logging, graceful shutdown (SIGTERM/SIGINT)
+
 ### Další kroky
+- [ ] SEO audit handler — crawler (Playwright + cheerio) + analyzéry + AI compilation (nahradí placeholder)
 - [ ] Job queue UI — formulář pro spuštění jobu, progress bar s realtime updaty, výsledky
-- [ ] SEO audit job — worker pipeline (crawler + analyzer + report generator)
 - [ ] Job result viewer — zobrazení TechnicalAuditResult dat
+- [ ] Aplikovat migraci 003 (`npm run db:migrate`)
 
 ### Známé gaps
 - `.env.local` symlink (`apps/web/.env.local` → `../../.env.local`) — není v gitu, manuální setup
 - Password reset flow — odloženo na post-MVP
 - Keyword analýza (`/seo/keyword-analysis`) — disabled v nav, stránka zatím neexistuje
+- Worker env vars: `NEXT_PUBLIC_SUPABASE_URL`, `SUPABASE_SERVICE_ROLE_KEY` — musí být nastaveny v Railway

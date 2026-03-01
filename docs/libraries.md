@@ -149,6 +149,14 @@ POST   /api/jobs/[id]  {action:"cancel"} → Cancel running job
 - Vrací `{ status, progress, progressMessage }`.
 - Auto-cleanup: `supabase.removeChannel(channel)` na unmount.
 
+### Worker Infrastructure
+- **Entry point** (`workers/job-runner/src/index.ts`): poll loop každých 5s (`JOB_POLL_INTERVAL_MS`), graceful shutdown (SIGTERM/SIGINT).
+- **Queue consumer** (`queue/consumer.ts`): `pollForJob()` volá `claim_next_job` RPC (atomic claim, FOR UPDATE SKIP LOCKED). `updateProgress`, `completeJob`, `failJob` (retry logika: re-queue pokud `retryCount < maxRetries`, jinak permanent fail).
+- **Handler registry** (`jobs/registry.ts`): `registerHandler(jobType, handler)` / `getHandler(jobType)`. Handler interface: `(job: Job, updateProgress: ProgressFn) => Promise<Record<string, unknown>>`.
+- **Timeout watchdog**: z `timeout_at` nebo `JOB_TYPE_REGISTRY.defaultTimeoutMs`. Heartbeat re-sends progress každých 30s.
+- **Audit log**: worker zapisuje `job.completed` a `job.failed` do `audit_log` tabulky.
+- **Migration 003** (`claim_next_job`): `SECURITY DEFINER` PostgreSQL funkce, `RETURNS SETOF jobs`, `SET search_path = public`.
+
 ### Job Creation Payload
 ```typescript
 // POST /api/jobs
