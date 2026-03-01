@@ -82,6 +82,98 @@ export const CATEGORY_LABELS: Record<
   security: "Bezpečnost",
 };
 
+// ── Severity labels (Czech) ───────────────────────────────
+
+export const SEVERITY_LABELS: Record<string, string> = {
+  critical: "Kritický",
+  warning: "Varování",
+  info: "Info",
+};
+
+// ── Scored issues ────────────────────────────────────────
+
+export type ScoredIssue = {
+  title: string;
+  severity: string;
+  impact: number;
+  effort: number;
+  quadrant: string;
+};
+
+const SEVERITY_ORDER: Record<string, number> = {
+  critical: 0,
+  warning: 1,
+  info: 2,
+};
+
+export { SEVERITY_ORDER };
+
+/**
+ * Parse the "## Hodnocení issues (Impact × Effort)" section from AI markdown.
+ * Returns a map keyed by lowercase issue title.
+ */
+export function parseIssueScores(
+  markdown: string,
+): Record<string, ScoredIssue> {
+  const result: Record<string, ScoredIssue> = {};
+
+  const sectionMatch = markdown.match(
+    /## Hodnocení issues \(Impact × Effort\)\n([\s\S]*?)(?=\n## |$)/,
+  );
+  if (!sectionMatch?.[1]) return result;
+
+  const lineRegex =
+    /- \*\*(.+?)\*\* \[(\w+)\] — Impact: (\d)\/5, Effort: (\d)\/5 → (.+)/g;
+  let match;
+  while ((match = lineRegex.exec(sectionMatch[1])) !== null) {
+    const title = match[1];
+    const severity = match[2];
+    const impact = match[3];
+    const effort = match[4];
+    const quadrant = match[5];
+    if (!title || !severity || !impact || !effort || !quadrant) continue;
+    result[title.toLowerCase()] = {
+      title,
+      severity: severity.toLowerCase(),
+      impact: Number(impact),
+      effort: Number(effort),
+      quadrant: quadrant.trim(),
+    };
+  }
+
+  return result;
+}
+
+export function getQuadrantColor(quadrant: string): string {
+  switch (quadrant) {
+    case "Quick Win":
+      return "text-success";
+    case "Major Project":
+      return "text-warning";
+    case "Fill-in":
+      return "text-info";
+    case "Time Waster":
+      return "text-error";
+    default:
+      return "text-muted-foreground";
+  }
+}
+
+export function getQuadrantBg(quadrant: string): string {
+  switch (quadrant) {
+    case "Quick Win":
+      return "bg-success/10";
+    case "Major Project":
+      return "bg-warning/10";
+    case "Fill-in":
+      return "bg-info/10";
+    case "Time Waster":
+      return "bg-error/10";
+    default:
+      return "bg-muted";
+  }
+}
+
 // ── AI recommendations parser ──────────────────────────────
 
 export type ParsedRecommendations = {

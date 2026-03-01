@@ -10,8 +10,8 @@ import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { ReportHeader } from "@/components/seo/report-header";
 import { ScoreCards } from "@/components/seo/score-cards";
-import { CategorySection } from "@/components/seo/category-section";
-import { ActionPlan } from "@/components/seo/action-plan";
+import { ReportTabs } from "@/components/seo/report-tabs";
+import { parseIssueScores } from "@/lib/seo-utils";
 
 type RouteParams = { params: Promise<{ id: string; jobId: string }> };
 
@@ -106,9 +106,13 @@ export default async function JobStatusPage({ params }: RouteParams) {
 
             <ScoreCards summary={report.summary} />
 
-            <ActionPlan aiRecommendations={report.ai_recommendations} />
-
-            <CategorySection categories={report.categories} />
+            <ReportTabs
+              categories={report.categories}
+              pages={report.pages}
+              aiRecommendations={report.ai_recommendations}
+              scoredIssues={parseIssueScores(report.ai_recommendations)}
+              summary={report.summary}
+            />
           </div>
         </>
       )}

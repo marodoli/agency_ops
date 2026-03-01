@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { ChevronDown, Lightbulb } from "lucide-react";
+import { ChevronDown, ChevronRight, Lightbulb } from "lucide-react";
 import type { Issue } from "@agency-ops/shared";
 
 import { Badge } from "@/components/ui/badge";
@@ -26,9 +26,10 @@ const SEVERITY_BADGE_CLASS: Record<string, string> = {
 
 type IssueCardProps = {
   issue: Issue;
+  onClick?: () => void;
 };
 
-export function IssueCard({ issue }: IssueCardProps) {
+export function IssueCard({ issue, onClick }: IssueCardProps) {
   const [urlsOpen, setUrlsOpen] = useState(false);
   const maxUrls = 20;
   const visibleUrls = issue.affected_urls.slice(0, maxUrls);
@@ -36,7 +37,11 @@ export function IssueCard({ issue }: IssueCardProps) {
 
   return (
     <div
-      className={`rounded-md border border-l-4 ${getSeverityBorder(issue.severity)} p-4`}
+      className={`rounded-md border border-l-4 ${getSeverityBorder(issue.severity)} p-4 ${onClick ? "cursor-pointer transition-shadow hover:shadow-md" : ""}`}
+      onClick={onClick}
+      role={onClick ? "button" : undefined}
+      tabIndex={onClick ? 0 : undefined}
+      onKeyDown={onClick ? (e) => { if (e.key === "Enter" || e.key === " ") onClick(); } : undefined}
     >
       {/* Header */}
       <div className="flex items-start gap-2">
@@ -46,7 +51,10 @@ export function IssueCard({ issue }: IssueCardProps) {
         >
           {SEVERITY_LABEL[issue.severity]}
         </Badge>
-        <span className="font-medium">{issue.title}</span>
+        <span className="flex-1 font-medium">{issue.title}</span>
+        {onClick && (
+          <ChevronRight className="mt-0.5 size-4 shrink-0 text-muted-foreground" />
+        )}
       </div>
 
       {/* Description */}

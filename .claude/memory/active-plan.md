@@ -1,6 +1,6 @@
 # Active Plan — Agency Ops
 
-## Aktuální stav: BLOK 10 — Analyzéry 1/3 (hotovo)
+## Aktuální stav: BLOK 11 — SEO Report UI rozšíření (hotovo)
 
 ### Hotovo
 - [x] BLOK 1: DB schema + RLS policies + helper funkce
@@ -55,12 +55,21 @@
 - [x] BLOK 10: OnPageAnalyzer — missing/duplicate/long/short title, missing/duplicate meta desc, missing/multiple H1, H1=title, thin content, missing alt, large images, missing max-image-preview
 - [x] BLOK 10: SecurityAnalyzer — HTTP bez HTTPS, mixed content, HSTS check, redirect chain >2, redirect loops, 302 vs 301
 
+- [x] BLOK 10: ArchitectureAnalyzer, StructuredDataAnalyzer, PerformanceAnalyzer, AeoGeoAnalyzer, InternationalAnalyzer — 8 analyzérů celkem, 63 unit testů
+- [x] BLOK 10: AI compilation (`lib/ai.ts`) — Anthropic claude-sonnet-4-6, Impact×Effort scoring, akční plán (sprint 1/2/backlog), executive summary
+- [x] BLOK 10: SEO audit handler (`handler.ts`) — 6-krokový pipeline (Preparation → Crawl → PageSpeed → Analysis → AI → Report Assembly)
+- [x] BLOK 11: SEO report viewer — ReportHeader + ScoreCards + ActionPlan + CategorySection (lineární layout)
+- [x] BLOK 11: Report tabs layout — 4 taby (Nálezy, Akční plán, Statistiky, Omezení)
+- [x] BLOK 11: Issue filtering — severity toggle, text search, category multi-select dropdown
+- [x] BLOK 11: Issue detail Sheet — popis, doporučení, Impact/Effort badges, quadrant, affected URLs (max 50)
+- [x] BLOK 11: Crawl stats — pie chart (status codes), bar histogram (response time), top 10 nejpomalejších
+- [x] BLOK 11: Audit limitations — 5 disclaimerů (bez GSC, bez server logů, JS vzorek, bez near-duplicate, lab data)
+- [x] BLOK 11: seo-utils rozšíření — parseIssueScores(), ScoredIssue type, SEVERITY_LABELS/ORDER, getQuadrantColor/Bg
+- [x] BLOK 11: IssueCard onClick — volitelný prop, ChevronRight, hover shadow, keyboard a11y
+
 ### Další kroky
-- [ ] Zbývající analyzéry (architecture, structured-data, performance, aeo-geo, international)
-- [ ] SEO audit handler — propojení crawleru + PageSpeed + analyzéry + AI compilation
-- [ ] AI compilation (Claude Sonnet — executive summary, Impact/Effort scoring, akční plán)
-- [ ] Job result viewer — zobrazení TechnicalAuditResult dat
 - [ ] Aplikovat migraci 003 (`npm run db:migrate`)
+- [ ] E2E test s reálným reportem (vizuální kontrola desktop + mobil)
 
 ### Známé gaps
 - `.env.local` symlink (`apps/web/.env.local` → `../../.env.local`) — není v gitu, manuální setup
