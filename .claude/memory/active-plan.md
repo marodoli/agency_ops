@@ -1,6 +1,6 @@
 # Active Plan — Agency Ops
 
-## Aktuální stav: BLOK 7 — Job Worker Infrastructure (hotovo)
+## Aktuální stav: BLOK 8 — Job Queue UI (hotovo)
 
 ### Hotovo
 - [x] BLOK 1: DB schema + RLS policies + helper funkce
@@ -40,9 +40,14 @@
 - [x] BLOK 7: Job handler registry (`jobs/registry.ts`) — registerHandler/getHandler + placeholder seo.technical-audit
 - [x] BLOK 7: Worker entry point (`index.ts`) — poll loop 5s, timeout watchdog, 30s heartbeat, max 3 retries, pino logging, graceful shutdown (SIGTERM/SIGINT)
 
+- [x] BLOK 8: Job launcher form (`components/jobs/job-launcher-form.tsx`) — client selector, doména (auto-fill z klienta), crawl depth (1-5), max pages (10/50/100/250/500), custom instructions, odhadovaný čas
+- [x] BLOK 8: Technical audit page (`seo/technical-audit/page.tsx`) — RSC, fetches clients, renders launcher form
+- [x] BLOK 8: Job progress card (`components/jobs/job-progress-card.tsx`) — useJobProgress hook, stavy queued/running/completed/failed/cancelled, elapsed timer, error detail refetch
+- [x] BLOK 8: Job status page (`clients/[id]/jobs/[jobId]/page.tsx`) — RSC, fetches job + client, renders progress card
+- [x] BLOK 8: Zod validace (`lib/validations/job.ts`) — jobLauncherSchema
+
 ### Další kroky
 - [ ] SEO audit handler — crawler (Playwright + cheerio) + analyzéry + AI compilation (nahradí placeholder)
-- [ ] Job queue UI — formulář pro spuštění jobu, progress bar s realtime updaty, výsledky
 - [ ] Job result viewer — zobrazení TechnicalAuditResult dat
 - [ ] Aplikovat migraci 003 (`npm run db:migrate`)
 

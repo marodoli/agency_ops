@@ -238,6 +238,24 @@ Použití: Sidebar, headery, sekundární tlačítka, text akcenty, linky.
 - **Issue card:** severity icon vlevo (barva dle severity) + title + description, affected URLs collapsible
 - **Report section:** collapsible accordion, header = kategorie název + score badge + issue count
 
+**Job launcher form** (`components/jobs/job-launcher-form.tsx`):
+- max-w-lg, h1 + popis + formulář
+- Client selector: shadcn Select, auto-fills domain
+- Doména: Input, cleanDomain stripuje protocol/www
+- Crawl depth + Max pages: 2-col grid, Select
+- Custom instructions: Textarea (3 rows, max 2000 znaků)
+- Submit: Button s Play ikonou + Loader2 při loading
+- Odhadovaný čas: Zap ikona + text-xs text-muted-foreground, dynamicky dle max_pages
+
+**Job progress card** (`components/jobs/job-progress-card.tsx`):
+- Card wrapper, CardHeader s job label + Badge (stav)
+- Queued: Clock (animate-pulse) + "Čeká ve frontě..."
+- Running: Loader2 (animate-spin) + progressMessage + progress bar (shadcn Progress h-2) + percentage + ElapsedTimer
+- Completed: CheckCircle text-success + "Analýza dokončena" + Button link na klienta
+- Failed: XCircle text-destructive + error banner (bg-destructive/10) + "Zkusit znovu" link
+- Cancelled: Ban + "Analýza zrušena"
+- CardFooter: akční tlačítka dle stavu
+
 ---
 
 ## Ikony

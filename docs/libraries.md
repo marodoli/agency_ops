@@ -157,6 +157,13 @@ POST   /api/jobs/[id]  {action:"cancel"} → Cancel running job
 - **Audit log**: worker zapisuje `job.completed` a `job.failed` do `audit_log` tabulky.
 - **Migration 003** (`claim_next_job`): `SECURITY DEFINER` PostgreSQL funkce, `RETURNS SETOF jobs`, `SET search_path = public`.
 
+### Job Queue UI
+- **Job launcher form** (`components/jobs/job-launcher-form.tsx`): "use client", React Hook Form + Zod. Client selector (Select), doména (auto-fill z klienta, cleanDomain strip protokol/www), crawl depth (1-5), max pages (10/50/100/250/500), custom instructions, dynamický odhad času. POST `/api/jobs` → redirect na `/clients/{slug}/jobs/{jobId}`.
+- **Job progress card** (`components/jobs/job-progress-card.tsx`): "use client", `useJobProgress` hook pro realtime. Stavy: queued (Clock + pulse), running (Progress bar + Loader2 + elapsed timer), completed (CheckCircle + link), failed (XCircle + error detail refetch), cancelled (Ban). ElapsedTimer subcomponent s setInterval.
+- **Technical audit page** (`seo/technical-audit/page.tsx`): RSC, fetchuje clients (RLS), renders JobLauncherForm.
+- **Job status page** (`clients/[id]/jobs/[jobId]/page.tsx`): RSC, fetchuje job + client by slug, renders JobProgressCard.
+- **Validace** (`lib/validations/job.ts`): jobLauncherSchema — client_id, domain, crawl_depth, max_pages, custom_instructions.
+
 ### Job Creation Payload
 ```typescript
 // POST /api/jobs
